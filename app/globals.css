@@ -1,0 +1,147 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+@import "../vendor/shadcn-tailwind-4.13.0.css";
+
+@utility scrollbar-thin {
+  scrollbar-width: thin;
+}
+
+@utility scrollbar-none {
+  scrollbar-width: none;
+
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility scrollbar-gutter-stable {
+  scrollbar-gutter: stable;
+}
+
+:root {
+  --background: #fff8fb;
+  --foreground: #3b1d2a;
+  --card: #ffffff;
+  --card-foreground: #3b1d2a;
+  --popover: #ffffff;
+  --popover-foreground: #3b1d2a;
+  --primary: #bd3568;
+  --primary-foreground: #ffffff;
+  --secondary: #fbe6ee;
+  --secondary-foreground: #743149;
+  --muted: #f8edf2;
+  --muted-foreground: #7b6670;
+  --accent: #f7d8e4;
+  --accent-foreground: #7b2747;
+  --destructive: #c72b43;
+  --border: #edd5df;
+  --input: #e7cbd6;
+  --ring: #d75f8b;
+  --chart-1: #c53f72;
+  --chart-2: #e3779d;
+  --chart-3: #9c2f58;
+  --chart-4: #f0a8c1;
+  --chart-5: #7e2949;
+  --radius: 0.875rem;
+  --sidebar: #fff3f7;
+  --sidebar-foreground: #3b1d2a;
+  --sidebar-primary: #bd3568;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #f7d8e4;
+  --sidebar-accent-foreground: #7b2747;
+  --sidebar-border: #edd5df;
+  --sidebar-ring: #d75f8b;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --font-sans: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas,
+    "Liberation Mono", "Courier New", monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --background: #1c1016;
+    --foreground: #f9edf2;
+    --card: #281821;
+    --card-foreground: #f9edf2;
+    --popover: #281821;
+    --popover-foreground: #f9edf2;
+    --primary: #ee7da7;
+    --primary-foreground: #2b111b;
+    --secondary: #3a202b;
+    --secondary-foreground: #f6cddd;
+    --muted: #34202a;
+    --muted-foreground: #c6aab6;
+    --accent: #51283a;
+    --accent-foreground: #ffd8e6;
+    --destructive: #ff6b7c;
+    --border: #5a3343;
+    --input: #6b3c4f;
+    --ring: #f08cb1;
+    --chart-1: #f187ae;
+    --chart-2: #d85c8b;
+    --chart-3: #ffabc8;
+    --chart-4: #b94b74;
+    --chart-5: #ffd0df;
+    --sidebar: #24151c;
+    --sidebar-foreground: #f9edf2;
+    --sidebar-primary: #ee7da7;
+    --sidebar-primary-foreground: #2b111b;
+    --sidebar-accent: #51283a;
+    --sidebar-accent-foreground: #ffd8e6;
+    --sidebar-border: #5a3343;
+    --sidebar-ring: #f08cb1;
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "PingFang HK", "Noto Sans TC", "Microsoft JhengHei", sans-serif;
+  background-image:
+    radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--accent) 48%, transparent), transparent 32rem),
+    radial-gradient(circle at 92% 14%, color-mix(in srgb, var(--secondary) 66%, transparent), transparent 28rem);
+  background-attachment: fixed;
+}
+
+button,
+input,
+select {
+  touch-action: manipulation;
+}
