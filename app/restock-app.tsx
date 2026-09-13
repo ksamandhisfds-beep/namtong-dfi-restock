@@ -306,7 +306,7 @@ export default function RestockApp() {
           <div className="flex min-w-0 items-center gap-3">
             <div className="grid size-11 shrink-0 place-items-center rounded-full bg-primary text-lg font-semibold text-primary-foreground shadow-sm shadow-primary/20">南</div>
             <div className="min-w-0">
-              <p className="truncate text-sm text-muted-foreground">南堂花茶</p>
+              <p className="truncate text-sm text-muted-foreground">南堂花茶 · V1.0 穩定版</p>
               <h1 className="truncate text-lg font-semibold tracking-tight sm:text-xl">DFI 分店補貨</h1>
             </div>
           </div>
@@ -424,22 +424,21 @@ export default function RestockApp() {
       <Button type="button" size="lg" className="fixed bottom-[max(20px,env(safe-area-inset-bottom))] right-4 z-40 h-14 rounded-2xl px-5 shadow-xl shadow-primary/25 sm:hidden" onClick={() => openEntry()}><PackagePlus className="size-5" aria-hidden="true" />新增補貨</Button>
 
       <Sheet open={sheetOpen} onOpenChange={setSheetOpen}>
-        <SheetContent side="bottom" className="mx-auto max-h-[92dvh] w-full max-w-2xl overflow-y-auto rounded-t-[28px] border-primary/20 bg-background px-0 pb-[max(14px,env(safe-area-inset-bottom))]">
-          <SheetHeader className="border-b border-border/70 px-5 pb-4 pt-5 text-left sm:px-6"><div className="pr-10"><SheetTitle className="text-xl">新增補貨</SheetTitle><SheetDescription className="mt-1">一次填妥同日、同一分店的所有產品</SheetDescription></div></SheetHeader>
-          <div className="space-y-5 px-5 pb-3 sm:px-6">
-            <div className="grid gap-4 sm:grid-cols-[1.25fr_1fr]">
-              <div className="space-y-2 [&>[data-slot=native-select-wrapper]]:w-full"><Label htmlFor="branch-select">分店</Label><NativeSelect id="branch-select" value={selectedBranchId} className="h-12 rounded-xl bg-card text-base sm:text-base" onChange={(event) => { setSelectedBranchId(event.target.value); setQuantities({}); }}>{BRANCHES.map((branch) => <NativeSelectOption key={branch.id} value={branch.id}>{branch.name} · {branch.retailBrand}</NativeSelectOption>)}</NativeSelect></div>
-              <div className="space-y-2"><Label htmlFor="shipment-date">補貨日期</Label><Input id="shipment-date" type="date" value={shipmentDate} className="h-12 rounded-xl bg-card text-base sm:text-base" onChange={(event) => setShipmentDate(event.target.value)} /></div>
+        <SheetContent side="bottom" className="mx-auto max-h-[78dvh] w-full max-w-md overflow-hidden rounded-t-[24px] border-primary/30 bg-background px-0 pb-[max(8px,env(safe-area-inset-bottom))] [&>button]:grid [&>button]:size-11 [&>button]:place-items-center">
+          <SheetHeader className="border-b border-border/70 px-4 py-3 text-left"><div className="pr-12"><SheetTitle className="text-lg">快速新增補貨</SheetTitle><SheetDescription className="mt-0.5 truncate text-xs">{selectedBranch.retailBrand} · {selectedBranch.district}</SheetDescription></div></SheetHeader>
+          <div className="flex min-h-0 flex-1 flex-col gap-3 px-4">
+            <div className="grid grid-cols-[1.12fr_.88fr] gap-2 max-[359px]:grid-cols-1">
+              <div className="space-y-1 [&>[data-slot=native-select-wrapper]]:w-full"><Label htmlFor="branch-select" className="text-xs">分店</Label><NativeSelect id="branch-select" value={selectedBranchId} className="h-11 rounded-xl bg-card text-sm" onChange={(event) => { setSelectedBranchId(event.target.value); setQuantities({}); }}>{BRANCHES.map((branch) => <NativeSelectOption key={branch.id} value={branch.id}>{branch.name}</NativeSelectOption>)}</NativeSelect></div>
+              <div className="space-y-1"><Label htmlFor="shipment-date" className="text-xs">補貨日期</Label><Input id="shipment-date" type="date" value={shipmentDate} className="h-11 rounded-xl bg-card px-2 text-sm" onChange={(event) => setShipmentDate(event.target.value)} /></div>
             </div>
-            <div className="rounded-2xl bg-secondary/75 px-4 py-3"><p className="font-medium">{selectedBranch.name}</p><p className="mt-1 flex items-start gap-1.5 text-sm text-muted-foreground"><MapPin className="mt-0.5 size-4 shrink-0" aria-hidden="true" />{selectedBranch.address}</p></div>
-            <fieldset>
-              <legend className="font-semibold">補貨數量</legend><p className="mb-3 mt-1 text-sm text-muted-foreground">款式按過往出貨記錄顯示</p>
-              <div className="divide-y divide-border/70 overflow-hidden rounded-2xl border border-border/80 bg-card">
+            <section className="flex min-h-0 flex-1 flex-col" aria-labelledby="quick-quantity-heading">
+              <div className="mb-1.5 flex items-center justify-between gap-3"><h3 id="quick-quantity-heading" className="text-sm font-semibold">補貨數量</h3><span className="text-xs text-muted-foreground">只顯示此店款式</span></div>
+              <div className="min-h-0 flex-1 divide-y divide-border/70 overflow-y-auto overscroll-contain rounded-2xl border border-border/80 bg-card">
                 {availableProducts.map((product) => {
                   const quantity = quantities[product.id] ?? 0;
-                  return <div key={product.id} className="flex min-h-18 items-center justify-between gap-3 px-3 py-2.5 sm:px-4">
-                    <div className="min-w-0"><p className="truncate font-medium">{product.name}</p><p className="text-xs text-muted-foreground">SKU {product.id}</p></div>
-                    <div className="grid shrink-0 grid-cols-[44px_54px_44px] items-center gap-1">
+                  return <div key={product.id} className="flex min-h-14 items-center justify-between gap-2 px-2 py-1.5">
+                    <p className="min-w-0 truncate text-sm font-medium">{product.name}</p>
+                    <div className="grid shrink-0 grid-cols-[44px_46px_44px] items-center gap-1">
                       <Button type="button" variant="outline" size="icon" className="size-11 rounded-xl" aria-label={`${product.name}減一盒`} onClick={() => changeQuantity(product.id, -1)} disabled={quantity === 0}><Minus aria-hidden="true" /></Button>
                       <Input type="number" min="0" max="999" inputMode="numeric" aria-label={`${product.name}數量`} value={quantity} className="h-11 rounded-xl px-1 text-center text-base font-semibold tabular-nums sm:text-base" onChange={(event) => { const value = Math.min(999, Math.max(0, Number(event.target.value) || 0)); setQuantities((current) => ({ ...current, [product.id]: value })); }} />
                       <Button type="button" variant="secondary" size="icon" className="size-11 rounded-xl" aria-label={`${product.name}加一盒`} onClick={() => changeQuantity(product.id, 1)}><Plus aria-hidden="true" /></Button>
@@ -447,9 +446,12 @@ export default function RestockApp() {
                   </div>;
                 })}
               </div>
-            </fieldset>
-            <div className="space-y-2"><Label htmlFor="admin-pin" className="flex items-center gap-2"><LockKeyhole className="size-4 text-primary" aria-hidden="true" />管理密碼</Label><Input id="admin-pin" type="password" inputMode="numeric" autoComplete="current-password" placeholder="輸入 4 位數字密碼" value={pin} className="h-12 rounded-xl bg-card text-base sm:text-base" onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))} /><p className="text-xs text-muted-foreground">瀏覽分店、記錄及趨勢毋須登入</p></div>
-            <div className="sticky bottom-0 -mx-5 flex items-center justify-between gap-4 border-t border-border/80 bg-background/95 px-5 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6"><div><span className="block text-sm text-muted-foreground">今次合計</span><strong className="text-2xl font-semibold tabular-nums">{entryTotal} 盒</strong></div><Button type="button" size="lg" className="h-12 min-w-36 rounded-xl" disabled={saving || entryTotal === 0} onClick={() => void saveShipment()}>{saving ? <RefreshCw className="animate-spin" aria-hidden="true" /> : <PackagePlus aria-hidden="true" />}{saving ? "儲存中" : "儲存記錄"}</Button></div>
+            </section>
+            <div className="-mx-4 grid grid-cols-[78px_1fr_108px] items-end gap-2 border-t border-border/80 bg-background/96 px-4 pb-1 pt-2.5 backdrop-blur-xl">
+              <div className="space-y-1"><Label htmlFor="admin-pin" className="flex items-center gap-1 text-xs"><LockKeyhole className="size-3.5 text-chart-1" aria-hidden="true" />密碼</Label><Input id="admin-pin" type="password" inputMode="numeric" autoComplete="current-password" placeholder="4 位" value={pin} className="h-11 rounded-xl bg-card px-2 text-center text-sm" onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))} /></div>
+              <div className="pb-1 text-center"><span className="block text-xs text-muted-foreground">合計</span><strong className="text-lg font-semibold tabular-nums">{entryTotal} 盒</strong></div>
+              <Button type="button" className="h-11 rounded-xl px-3" disabled={saving || entryTotal === 0} onClick={() => void saveShipment()}>{saving ? <RefreshCw className="animate-spin" aria-hidden="true" /> : <PackagePlus aria-hidden="true" />}{saving ? "儲存中" : "儲存"}</Button>
+            </div>
           </div>
         </SheetContent>
       </Sheet>
