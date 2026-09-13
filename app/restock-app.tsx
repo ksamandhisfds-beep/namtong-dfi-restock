@@ -262,7 +262,7 @@ export default function RestockApp() {
       toast.error("請先填寫最少一款產品數量");
       return;
     }
-    if (!/^\d{6,12}$/.test(pin)) {
+    if (!/^\d{4}$/.test(pin)) {
       toast.error("請輸入管理密碼");
       return;
     }
@@ -448,7 +448,7 @@ export default function RestockApp() {
                 })}
               </div>
             </fieldset>
-            <div className="space-y-2"><Label htmlFor="admin-pin" className="flex items-center gap-2"><LockKeyhole className="size-4 text-primary" aria-hidden="true" />管理密碼</Label><Input id="admin-pin" type="password" inputMode="numeric" autoComplete="current-password" placeholder="只在新增記錄時需要" value={pin} className="h-12 rounded-xl bg-card text-base sm:text-base" onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 12))} /><p className="text-xs text-muted-foreground">瀏覽分店、記錄及趨勢毋須登入</p></div>
+            <div className="space-y-2"><Label htmlFor="admin-pin" className="flex items-center gap-2"><LockKeyhole className="size-4 text-primary" aria-hidden="true" />管理密碼</Label><Input id="admin-pin" type="password" inputMode="numeric" autoComplete="current-password" placeholder="輸入 4 位數字密碼" value={pin} className="h-12 rounded-xl bg-card text-base sm:text-base" onChange={(event) => setPin(event.target.value.replace(/\D/g, "").slice(0, 4))} /><p className="text-xs text-muted-foreground">瀏覽分店、記錄及趨勢毋須登入</p></div>
             <div className="sticky bottom-0 -mx-5 flex items-center justify-between gap-4 border-t border-border/80 bg-background/95 px-5 py-3 backdrop-blur-xl sm:-mx-6 sm:px-6"><div><span className="block text-sm text-muted-foreground">今次合計</span><strong className="text-2xl font-semibold tabular-nums">{entryTotal} 盒</strong></div><Button type="button" size="lg" className="h-12 min-w-36 rounded-xl" disabled={saving || entryTotal === 0} onClick={() => void saveShipment()}>{saving ? <RefreshCw className="animate-spin" aria-hidden="true" /> : <PackagePlus aria-hidden="true" />}{saving ? "儲存中" : "儲存記錄"}</Button></div>
           </div>
         </SheetContent>
