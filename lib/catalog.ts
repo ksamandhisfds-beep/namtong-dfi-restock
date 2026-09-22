@@ -71,7 +71,7 @@ export const BRANCHES: Branch[] = [
     district: "尖沙咀",
     address: "九龍尖沙咀河內道18號K11地庫一樓B111號至B121號舖",
     openingHours: "每日 09:00–22:00",
-    cycleDays: 14,
+    cycleDays: 10,
     deliveryCode: "K11",
     baselineQuantities: {
       "133230": 3,
