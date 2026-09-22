@@ -15,6 +15,18 @@ type ShipmentRow = {
   created_at: string;
 };
 
+type ShelfObservationRow = {
+  id: string;
+  visit_id: string;
+  observed_date: string;
+  branch_id: string;
+  product_id: string;
+  remaining_quantity: number;
+  shelf_not_full: number;
+  source: string;
+  created_at: string;
+};
+
 function getDatabase() {
   if (!env.DB) {
     throw new Error("資料庫暫時未能連接，請稍後再試。");
@@ -73,23 +85,44 @@ export async function GET() {
   try {
     await ensureHistoricalData();
     const database = getDatabase();
-    const result = await database
-      .prepare(
-        `SELECT id, visit_id, shipment_date, branch_id, product_id,
-                quantity, source, created_at
-         FROM shipments
-         ORDER BY shipment_date DESC, created_at DESC, id DESC`,
-      )
-      .all<ShipmentRow>();
+    const [shipmentResult, observationResult] = await Promise.all([
+      database
+        .prepare(
+          `SELECT id, visit_id, shipment_date, branch_id, product_id,
+                  quantity, source, created_at
+           FROM shipments
+           ORDER BY shipment_date DESC, created_at DESC, id DESC`,
+        )
+        .all<ShipmentRow>(),
+      database
+        .prepare(
+          `SELECT id, visit_id, observed_date, branch_id, product_id,
+                  remaining_quantity, shelf_not_full, source, created_at
+           FROM shelf_observations
+           ORDER BY observed_date DESC, created_at DESC, id DESC`,
+        )
+        .all<ShelfObservationRow>(),
+    ]);
 
     return responseWithNoStore({
-      shipments: (result.results ?? []).map((row) => ({
+      shipments: (shipmentResult.results ?? []).map((row) => ({
         id: row.id,
         visitId: row.visit_id,
         date: row.shipment_date,
         branchId: row.branch_id,
         productId: row.product_id,
         quantity: row.quantity,
+        source: row.source,
+        createdAt: row.created_at,
+      })),
+      observations: (observationResult.results ?? []).map((row) => ({
+        id: row.id,
+        visitId: row.visit_id,
+        date: row.observed_date,
+        branchId: row.branch_id,
+        productId: row.product_id,
+        remainingQuantity: row.remaining_quantity,
+        shelfNotFull: Boolean(row.shelf_not_full),
         source: row.source,
         createdAt: row.created_at,
       })),
@@ -117,14 +150,21 @@ export async function POST(request: Request) {
     const payload = (await request.json()) as {
       date?: string;
       branchId?: string;
-      quantities?: Array<{ productId?: string; quantity?: number }>;
+      items?: Array<{
+        productId?: string;
+        quantity?: number;
+        remainingQuantity?: number | null;
+        shelfNotFull?: boolean;
+      }>;
     };
 
     const date = payload.date?.trim() ?? "";
     const branchId = payload.branchId?.trim() ?? "";
     const branch = BRANCH_BY_ID[branchId];
-    const quantities = (payload.quantities ?? []).filter(
-      (item) => Number.isInteger(item.quantity) && Number(item.quantity) > 0,
+    const items = (payload.items ?? []).filter(
+      (item) =>
+        (Number.isInteger(item.quantity) && Number(item.quantity) > 0) ||
+        (Number.isInteger(item.remainingQuantity) && Number(item.remainingQuantity) >= 0),
     );
 
     if (!/^20\d{2}-\d{2}-\d{2}$/.test(date)) {
@@ -133,17 +173,23 @@ export async function POST(request: Request) {
     if (!branch) {
       return responseWithNoStore({ error: "請選擇有效分店。" }, { status: 400 });
     }
-    if (!quantities.length) {
-      return responseWithNoStore({ error: "最少要填寫一款產品數量。" }, { status: 400 });
+    if (!items.length) {
+      return responseWithNoStore({ error: "最少要填寫一款產品的餘量或補貨數量。" }, { status: 400 });
     }
 
-    for (const item of quantities) {
+    for (const item of items) {
       const productId = item.productId ?? "";
-      const quantity = Number(item.quantity);
+      const quantity = Number(item.quantity ?? 0);
+      const remainingQuantity = item.remainingQuantity;
       if (
         !PRODUCT_BY_ID[productId] ||
         !branch.productIds.includes(productId) ||
-        quantity > 999
+        !Number.isInteger(quantity) ||
+        quantity < 0 ||
+        quantity > 999 ||
+        (remainingQuantity !== null &&
+          remainingQuantity !== undefined &&
+          (!Number.isInteger(remainingQuantity) || remainingQuantity < 0 || remainingQuantity > 999))
       ) {
         return responseWithNoStore(
           { error: "產品或數量有誤，請重新檢查。" },
@@ -156,8 +202,8 @@ export async function POST(request: Request) {
     const database = getDatabase();
     const createdAt = new Date().toISOString();
     const visitId = `web:${crypto.randomUUID()}`;
-    const rows = quantities.map((item, index) => ({
-      id: `${visitId}:${index + 1}`,
+    const rows = items.filter((item) => Number(item.quantity ?? 0) > 0).map((item, index) => ({
+      id: `${visitId}:shipment:${index + 1}`,
       visitId,
       date,
       branchId,
@@ -167,7 +213,21 @@ export async function POST(request: Request) {
       createdAt,
     }));
 
-    const statements = rows.map((row) =>
+    const observations = items
+      .filter((item) => item.remainingQuantity !== null && item.remainingQuantity !== undefined)
+      .map((item, index) => ({
+        id: `${visitId}:observation:${index + 1}`,
+        visitId,
+        date,
+        branchId,
+        productId: item.productId as string,
+        remainingQuantity: Number(item.remainingQuantity),
+        shelfNotFull: Boolean(item.shelfNotFull),
+        source: "web",
+        createdAt,
+      }));
+
+    const shipmentStatements = rows.map((row) =>
       database
         .prepare(
           `INSERT INTO shipments
@@ -185,9 +245,29 @@ export async function POST(request: Request) {
           row.createdAt,
         ),
     );
-    await database.batch(statements);
+    const observationStatements = observations.map((observation) =>
+      database
+        .prepare(
+          `INSERT INTO shelf_observations
+            (id, visit_id, observed_date, branch_id, product_id,
+             remaining_quantity, shelf_not_full, source, created_at)
+           VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        )
+        .bind(
+          observation.id,
+          observation.visitId,
+          observation.date,
+          observation.branchId,
+          observation.productId,
+          observation.remainingQuantity,
+          observation.shelfNotFull ? 1 : 0,
+          observation.source,
+          observation.createdAt,
+        ),
+    );
+    await database.batch([...shipmentStatements, ...observationStatements]);
 
-    return responseWithNoStore({ rows }, { status: 201 });
+    return responseWithNoStore({ rows, observations }, { status: 201 });
   } catch (error) {
     console.error("Unable to save shipment", error);
     return responseWithNoStore(

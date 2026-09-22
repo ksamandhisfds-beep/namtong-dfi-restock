@@ -9,6 +9,10 @@ export type Branch = {
   retailBrand: string;
   district: string;
   address: string;
+  openingHours: string;
+  cycleDays: number;
+  deliveryCode: string;
+  baselineQuantities: Record<string, number>;
   productIds: string[];
 };
 
@@ -28,6 +32,17 @@ export const BRANCHES: Branch[] = [
     retailBrand: "Market Place",
     district: "旺角",
     address: "九龍旺角亞皆老街8號朗豪坊地庫B2 8號舖",
+    openingHours: "每日 08:00–23:00",
+    cycleDays: 10,
+    deliveryCode: "LP",
+    baselineQuantities: {
+      "133230": 3,
+      "133216": 2,
+      "133254": 3,
+      "133223": 2,
+      "133261": 2,
+      "133247": 2,
+    },
     productIds: ["133216", "133230", "133223", "133254", "133247", "133261"],
   },
   {
@@ -36,6 +51,17 @@ export const BRANCHES: Branch[] = [
     retailBrand: "3hreesixty",
     district: "九龍站",
     address: "九龍尖沙咀柯士甸道西1號ELEMENTS圓方木區1樓1090號舖",
+    openingHours: "每日 08:00–22:30",
+    cycleDays: 12,
+    deliveryCode: "EL",
+    baselineQuantities: {
+      "133230": 4,
+      "133216": 3,
+      "133254": 3,
+      "133223": 2,
+      "133261": 3,
+      "133247": 1,
+    },
     productIds: ["133216", "133230", "133223", "133254", "133247", "133261"],
   },
   {
@@ -44,6 +70,16 @@ export const BRANCHES: Branch[] = [
     retailBrand: "Market Place",
     district: "尖沙咀",
     address: "九龍尖沙咀河內道18號K11地庫一樓B111號至B121號舖",
+    openingHours: "每日 09:00–22:00",
+    cycleDays: 14,
+    deliveryCode: "K11",
+    baselineQuantities: {
+      "133230": 3,
+      "133216": 3,
+      "133254": 3,
+      "133223": 2,
+      "133261": 2,
+    },
     productIds: ["133216", "133230", "133223", "133254", "133261"],
   },
   {
@@ -52,6 +88,16 @@ export const BRANCHES: Branch[] = [
     retailBrand: "Wellcome Fresh",
     district: "西環",
     address: "香港西環卑路乍街8號西寶城3樓301號舖",
+    openingHours: "每日 08:00–23:00",
+    cycleDays: 14,
+    deliveryCode: "WB",
+    baselineQuantities: {
+      "133230": 2,
+      "133216": 2,
+      "133254": 1,
+      "133223": 1,
+      "133261": 1,
+    },
     productIds: ["133216", "133230", "133223", "133254", "133261"],
   },
 ];
