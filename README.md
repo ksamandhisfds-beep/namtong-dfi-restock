@@ -4,7 +4,9 @@
 
 ## 正式網站
 
-[namtong-dfi-restock.hale-dill-7085.chatgpt.site](https://namtong-dfi-restock.hale-dill-7085.chatgpt.site/)
+[namtong-dfi-restock.ksamandhisfds.workers.dev](https://namtong-dfi-restock.ksamandhisfds.workers.dev/)
+
+網站由 Cloudflare Workers 免費方案託管，連接本 GitHub 倉庫的 `main` 分支；每次推送更新都會自動重新構建及發佈。
 
 ## 主要功能
 
